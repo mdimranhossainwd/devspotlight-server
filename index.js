@@ -27,10 +27,17 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const featuresCollection = client.db("devspotDB").collection("features");
+    const trendingCollection = client.db("devspotDB").collection("trending");
 
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
       const result = await featuresCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get Trending Data
+    app.get("/api/v1/trending", async (req, res) => {
+      const result = await trendingCollection.find().toArray();
       res.send(result);
     });
 
