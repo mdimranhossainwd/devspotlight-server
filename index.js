@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
@@ -32,6 +32,14 @@ async function run() {
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
       const result = await featuresCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get Features Specefic Data
+    app.get("/api/v1/features/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await featuresCollection.findOne(query);
       res.send(result);
     });
 
