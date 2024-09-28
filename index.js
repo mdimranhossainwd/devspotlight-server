@@ -28,6 +28,7 @@ async function run() {
   try {
     const featuresCollection = client.db("devspotDB").collection("features");
     const trendingCollection = client.db("devspotDB").collection("trending");
+    const reviewsCollection = client.db("devspotDB").collection("reviews");
 
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
@@ -38,7 +39,6 @@ async function run() {
     // Get Features Specefic Data
     app.get("/api/v1/:type/:id", async (req, res) => {
       const { type, id } = req.params;
-
       try {
         let collection;
         if (type === "features") {
@@ -58,6 +58,13 @@ async function run() {
     // Get Trending Data
     app.get("/api/v1/trending", async (req, res) => {
       const result = await trendingCollection.find().toArray();
+      res.send(result);
+    });
+
+    // User Post his product data
+    app.post("/api/v1/reviews", async (req, res) => {
+      const body = req.body;
+      const result = await reviewsCollection.insertOne(body);
       res.send(result);
     });
 
