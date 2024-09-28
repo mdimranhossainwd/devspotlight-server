@@ -36,11 +36,23 @@ async function run() {
     });
 
     // Get Features Specefic Data
-    app.get("/api/v1/features/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await featuresCollection.findOne(query);
-      res.send(result);
+    app.get("/api/v1/:type/:id", async (req, res) => {
+      const { type, id } = req.params;
+
+      try {
+        let collection;
+        if (type === "features") {
+          collection = featuresCollection;
+        } else if (type === "trending") {
+          collection = trendingCollection;
+        } else {
+          return res.status(400).json({ message: "Invalid type" });
+        }
+        const product = await collection.findOne({ _id: new ObjectId(id) });
+        res.send(product);
+      } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+      }
     });
 
     // Get Trending Data
