@@ -64,7 +64,14 @@ async function run() {
 
     // Get Trending Data
     app.get("/api/v1/trending", async (req, res) => {
-      const result = await trendingCollection.find().toArray();
+      const sort = req.query.sort;
+      let options = {};
+      if (sort === "asc") {
+        options = { product_totalcount: 1 }; // Ascending order
+      } else if (sort === "desc") {
+        options = { product_totalcount: -1 }; // Descending order
+      }
+      const result = await trendingCollection.find({}).sort(options).toArray();
       res.send(result);
     });
 
