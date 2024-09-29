@@ -32,7 +32,14 @@ async function run() {
 
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
-      const result = await featuresCollection.find().toArray();
+      const sort = req.query.sort;
+      let options = {};
+      if (sort === "asc") {
+        options = { timestamp: 1 }; // Ascending order
+      } else if (sort === "desc") {
+        options = { timestamp: -1 }; // Descending order
+      }
+      const result = await featuresCollection.find({}).sort(options).toArray();
       res.send(result);
     });
 
