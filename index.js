@@ -29,6 +29,9 @@ async function run() {
     const featuresCollection = client.db("devspotDB").collection("features");
     const trendingCollection = client.db("devspotDB").collection("trending");
     const reviewsCollection = client.db("devspotDB").collection("reviews");
+    const addProductCollection = client
+      .db("devspotDB")
+      .collection("addproduct");
 
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
@@ -41,6 +44,13 @@ async function run() {
       }
       const result = await featuresCollection.find({}).sort(options).toArray();
       res.send(result);
+    });
+
+    // User post Product
+    app.post("/api/v1/add-product", async (req, res) => {
+      const body = req.body;
+      const result = await addProductCollection.insertOne(body);
+      console.log(result);
     });
 
     // Get Features Specefic Data
