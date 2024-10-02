@@ -47,10 +47,10 @@ async function run() {
     });
 
     // User post Product
-    app.post("/api/v1/add-product", async (req, res) => {
+    app.post("/api/v1/add-products", async (req, res) => {
       const body = req.body;
       const result = await addProductCollection.insertOne(body);
-      console.log(result);
+      res.send(result);
     });
 
     // Get Features Specefic Data
