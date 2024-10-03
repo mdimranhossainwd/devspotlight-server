@@ -92,6 +92,14 @@ async function run() {
       res.send(result);
     });
 
+    // Get Add product data specefic user's
+    app.get("/api/v1/add-products", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await addProductCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // Get user review data
     app.get("/api/v1/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
