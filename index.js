@@ -100,6 +100,24 @@ async function run() {
       res.send(result);
     });
 
+    // Update a Product data with
+    app.patch("/api/v1/add-product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const addProductData = req.body;
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          ...addProductData,
+        },
+      };
+      const result = await addProductCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+    });
+
     // Get user review data
     app.get("/api/v1/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
