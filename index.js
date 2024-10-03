@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const { v4: uuidv4 } = require("uuid");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -100,22 +101,18 @@ async function run() {
       res.send(result);
     });
 
-    // Update a Product data with
-    app.patch("/api/v1/add-product/:id", async (req, res) => {
+    Update a Product data with
+    app.patch("/api/v1/add-products/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const filter = { _id: new ObjectId(id) };
       const addProductData = req.body;
-      const options = { upsert: true };
       const updateDoc = {
         $set: {
           ...addProductData,
         },
       };
-      const result = await addProductCollection.updateOne(
-        query,
-        updateDoc,
-        options
-      );
+      const result = await addProductCollection.updateOne(filter, updateDoc);
+      res.send(result);
     });
 
     // Get user review data
