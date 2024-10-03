@@ -94,7 +94,7 @@ async function run() {
 
     // Get Add product data specefic user's
     app.get("/api/v1/add-products", async (req, res) => {
-      const email = req.params.email;
+      const email = req.query.email;
       const query = { email: email };
       const result = await addProductCollection.find(query).toArray();
       res.send(result);
