@@ -101,7 +101,7 @@ async function run() {
       res.send(result);
     });
 
-    Update a Product data with
+    // Update a Product data with
     app.patch("/api/v1/add-products/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
