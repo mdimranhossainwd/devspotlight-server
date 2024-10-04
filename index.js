@@ -115,6 +115,14 @@ async function run() {
       res.send(result);
     });
 
+    // Delete a Product
+    app.delete("/api/v1/add-products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addProductCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Get user review data
     app.get("/api/v1/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
