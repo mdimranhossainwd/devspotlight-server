@@ -43,6 +43,12 @@ async function run() {
       res.send(result);
     });
 
+    // Get all User's email
+    app.get("/api/v1/users", async (req, res) => {
+      const cursor = await usersCollection.find().toArray();
+      res.send(cursor);
+    });
+
     // Get user's with email finding
     app.get("/api/v1/users/:email", async (req, res) => {
       const email = req.params.email;
