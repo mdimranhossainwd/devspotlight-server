@@ -63,6 +63,14 @@ async function run() {
       res.send(cursor);
     });
 
+    // Moderator Deleted Reported Data
+    app.delete("/api/v1/report/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await reportCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
       const sort = req.query.sort;
