@@ -57,6 +57,12 @@ async function run() {
       res.send(result);
     });
 
+    // Moderator Get Reported Data
+    app.get("/api/v1/report", async (req, res) => {
+      const cursor = await reportCollection.find().toArray();
+      res.send(cursor);
+    });
+
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
       const sort = req.query.sort;
