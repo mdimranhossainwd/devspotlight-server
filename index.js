@@ -144,6 +144,20 @@ async function run() {
       res.send(result);
     });
 
+    // Get all Product
+    app.get("/api/v1/review-products", async (req, res) => {
+      const cursor = await addProductCollection.find().toArray();
+      res.send(cursor);
+    });
+
+    // Get specefic Product data
+    app.get("api/v1/review-products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addProductCollection.findOne(query);
+      res.send(result);
+    });
+
     // Update a Product data with
     app.patch("/api/v1/add-products/:id", async (req, res) => {
       const id = req.params.id;
