@@ -42,6 +42,13 @@ async function run() {
       res.send(result);
     });
 
+    // Get user's with email finding
+    app.get("/api/v1/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const cursor = await usersCollection.findOne({ email });
+      res.send(cursor);
+    });
+
     // Get Features Data
     app.get("/api/v1/features", async (req, res) => {
       const sort = req.query.sort;
