@@ -30,6 +30,7 @@ async function run() {
     const usersCollection = client.db("devspotDB").collection("users");
     const featuresCollection = client.db("devspotDB").collection("features");
     const trendingCollection = client.db("devspotDB").collection("trending");
+    const reportCollection = client.db("devspotDB").collection("report");
     const reviewsCollection = client.db("devspotDB").collection("reviews");
     const addProductCollection = client
       .db("devspotDB")
@@ -47,6 +48,13 @@ async function run() {
       const email = req.params.email;
       const cursor = await usersCollection.findOne({ email });
       res.send(cursor);
+    });
+
+    // Report Data Post
+    app.post("/api/v1/report", async (req, res) => {
+      const body = req.body;
+      const result = await reportCollection.insertOne(body);
+      res.send(result);
     });
 
     // Get Features Data
