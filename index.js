@@ -166,7 +166,7 @@ async function run() {
     });
 
     // Update a Product data with
-    app.patch("/api/v1/add-products/:id", async (req, res) => {
+    app.put("/api/v1/add-products/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const addProductData = req.body;
@@ -174,6 +174,18 @@ async function run() {
         $set: {
           ...addProductData,
         },
+      };
+      const result = await addProductCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // Update a product status
+    app.patch("/api/v1/review-products/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const status = req.body;
+      const updateDoc = {
+        $set: status,
       };
       const result = await addProductCollection.updateOne(filter, updateDoc);
       res.send(result);
