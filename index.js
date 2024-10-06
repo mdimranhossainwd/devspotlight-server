@@ -144,6 +144,13 @@ async function run() {
       res.send(result);
     });
 
+    // Post a product data with featuresCollections
+    app.post("/api/v1/review-products/:id", async (req, res) => {
+      const body = req.body;
+      const result = await featuresCollection.insertOne(body);
+      res.send(result);
+    });
+
     // Get all Product
     app.get("/api/v1/review-products", async (req, res) => {
       const cursor = await addProductCollection.find().toArray();
