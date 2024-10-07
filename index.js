@@ -33,12 +33,13 @@ async function run() {
     const trendingCollection = client.db("devspotDB").collection("trending");
     const reportCollection = client.db("devspotDB").collection("report");
     const reviewsCollection = client.db("devspotDB").collection("reviews");
+    const paymentsCollection = client.db("devspotDB").collection("payments");
     const addProductCollection = client
       .db("devspotDB")
       .collection("addproduct");
 
     // Payment post method
-    app.post("/create-payment-intent", async (req, res) => {
+    app.post("/api/v1/create-payment-intent", async (req, res) => {
       const price = 10;
       const amount = price * 100;
       console.log(amount);
@@ -51,6 +52,13 @@ async function run() {
         },
       });
       res.send({ clientSecret: paymentIntent.client_secret });
+    });
+
+    // Payment user's data posted
+    app.post("/api/v1/payment", async (req, res) => {
+      const body = req.body;
+      const result = await paymentsCollection.insertOne(body);
+      res.send(result);
     });
 
     // User Info Posted on DB
