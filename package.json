@@ -15,6 +15,7 @@
     "express": "^4.21.0",
     "mongodb": "^6.9.0",
     "mongoose": "^8.6.3",
+    "stripe": "^17.1.0",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {

@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const stripe = require("stripe")(process.env.DEVSPOTLIGHT_STRIPE_SK);
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
@@ -35,6 +36,22 @@ async function run() {
     const addProductCollection = client
       .db("devspotDB")
       .collection("addproduct");
+
+    // Payment post method
+    app.post("/create-payment-intent", async (req, res) => {
+      const price = 10;
+      const amount = price * 100;
+      console.log(amount);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
 
     // User Info Posted on DB
     app.post("/api/v1/users", async (req, res) => {
@@ -182,12 +199,12 @@ async function run() {
     // Update a product status
     app.patch("/api/v1/review-products/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
       const status = req.body;
+      const query = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: status,
       };
-      const result = await addProductCollection.updateOne(filter, updateDoc);
+      const result = await addProductCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
