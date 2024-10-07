@@ -61,6 +61,12 @@ async function run() {
       res.send(result);
     });
 
+    // Get user's Payment Data
+    app.get("/api/v1/payment", async (req, res) => {
+      const cursor = await paymentsCollection.find().toArray();
+      res.send(cursor);
+    });
+
     // User Info Posted on DB
     app.post("/api/v1/users", async (req, res) => {
       const body = req.body;
