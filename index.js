@@ -188,6 +188,18 @@ async function run() {
       res.send(cursor);
     });
 
+    // Get all Acceptable Product
+    app.get("/api/v1/accepted-products", async (req, res) => {
+      const cursor = await addProductCollection.find().toArray();
+      res.send(cursor);
+    });
+
+    // Get Count Data
+    app.get("/api/v1/products-count", async (req, res) => {
+      const count = await addProductCollection.countDocuments();
+      res.send({ count });
+    });
+
     // Get specefic Product data
     app.get("api/v1/review-products/:id", async (req, res) => {
       const id = req.params.id;
