@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const { v4: uuidv4 } = require("uuid");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const stripe = require("stripe")(process.env.DEVSPOTLIGHT_STRIPE_SK);
@@ -14,6 +16,23 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
+
+// Verify token
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).send({ status: "unauthorized access" });
+  if (token) {
+    jwt.verify(token, process.env.DEVSPOTLIGHT_TOKEN_KEY, (err, decoded) => {
+      if (err) {
+        returnres.status(401).send({ status: "unauthorized access" });
+      }
+      console.log(decoded);
+      req.user = decoded;
+      next();
+    });
+  }
+};
 
 const uri = `mongodb+srv://${process.env.DEVSPOTLIGHT_USER_NAME}:${process.env.DEVSPOTLIGHT_PASSWORD}@cluster0.2xcsswz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -37,6 +56,32 @@ async function run() {
     const addProductCollection = client
       .db("devspotDB")
       .collection("addproduct");
+
+    // JWT Generated
+    app.post("/api/v1/jwt", async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.DEVSPOTLIGHT_TOKEN_KEY, {
+        expiresIn: "14d",
+      });
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          samesite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        })
+        .send({ success: true });
+    });
+
+    app.get("/api/v1/logout", async (req, res) => {
+      res
+        .cookie("token", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          samesite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          maxAge: 0,
+        })
+        .send({ success: true });
+    });
 
     // Payment post method
     app.post("/api/v1/create-payment-intent", async (req, res) => {
@@ -193,10 +238,15 @@ async function run() {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page) - 1;
       const sort = req.query.sort;
+      const search = req.query.search;
+      const query = {
+        status: "Accepted",
+        tags: { $regex: search, $options: "i" },
+      };
       let options = {};
       if (sort) options = { sort: { timestamp: sort === "asc" ? 1 : -1 } };
       const cursor = await addProductCollection
-        .find({ status: "Accepted" }, options)
+        .find(query, options)
         .skip(page * size)
         .limit(size)
         .toArray();
@@ -205,9 +255,13 @@ async function run() {
 
     // Get Count Data
     app.get("/api/v1/products-count", async (req, res) => {
-      const count = await addProductCollection.countDocuments({
+      const search = req.query.search;
+      const query = {
         status: "Accepted",
-      });
+        tags: { $regex: search, $options: "i" },
+        // This should match the search filter
+      };
+      const count = await addProductCollection.countDocuments(query);
       res.send({ count });
     });
 
