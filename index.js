@@ -192,8 +192,11 @@ async function run() {
     app.get("/api/v1/accepted-products", async (req, res) => {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page) - 1;
+      const sort = req.query.sort;
+      let options = {};
+      if (sort) options = { sort: { timestamp: sort === "asc" ? 1 : -1 } };
       const cursor = await addProductCollection
-        .find({ status: "Accepted" })
+        .find({ status: "Accepted" }, options)
         .skip(page * size)
         .limit(size)
         .toArray();
