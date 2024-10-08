@@ -190,13 +190,21 @@ async function run() {
 
     // Get all Acceptable Product
     app.get("/api/v1/accepted-products", async (req, res) => {
-      const cursor = await addProductCollection.find().toArray();
+      const size = parseInt(req.query.size);
+      const page = parseInt(req.query.page) - 1;
+      const cursor = await addProductCollection
+        .find({ status: "Accepted" })
+        .skip(page * size)
+        .limit(size)
+        .toArray();
       res.send(cursor);
     });
 
     // Get Count Data
     app.get("/api/v1/products-count", async (req, res) => {
-      const count = await addProductCollection.countDocuments();
+      const count = await addProductCollection.countDocuments({
+        status: "Accepted",
+      });
       res.send({ count });
     });
 
