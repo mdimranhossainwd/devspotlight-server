@@ -10,7 +10,12 @@ const stripe = require("stripe")(process.env.DEVSPOTLIGHT_STRIPE_SK);
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: [
+    "devspotlight-9f31a.web.app",
+    "devspotlight-9f31a.firebaseapp.com",
+    "http://localhost:5173",
+    "http://localhost:5174",
+  ],
   credentials: true,
   optionSuccessStatus: 200,
 };
