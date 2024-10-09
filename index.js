@@ -106,6 +106,12 @@ async function run() {
       res.send(result);
     });
 
+    // Payment data geted
+    app.get("/api/v1/payment", async (req, res) => {
+      const cursor = await paymentsCollection.find().toArray();
+      res.send(cursor);
+    });
+
     // Get user's Payment Data
     app.get("/api/v1/payment", async (req, res) => {
       const cursor = await paymentsCollection.find().toArray();
