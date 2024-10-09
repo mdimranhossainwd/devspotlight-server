@@ -132,6 +132,18 @@ async function run() {
       res.send(cursor);
     });
 
+    // Update user's status
+    app.patch("/api/v1/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const role = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: role,
+      };
+      const result = await usersCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
     // Report Data Post
     app.post("/api/v1/report", async (req, res) => {
       const body = req.body;
