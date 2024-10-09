@@ -111,7 +111,7 @@ async function run() {
     });
 
     // Payment data geted
-    app.get("/api/v1/payment", verifyToken, async (req, res) => {
+    app.get("/api/v1/payment", async (req, res) => {
       const cursor = await paymentsCollection.find().toArray();
       res.send(cursor);
     });
@@ -237,7 +237,7 @@ async function run() {
     });
 
     // Get Add product data specefic user's
-    app.get("/api/v1/add-products", async (req, res) => {
+    app.get("/api/v1/add-products", verifyToken, async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
       const result = await addProductCollection.find(query).toArray();
