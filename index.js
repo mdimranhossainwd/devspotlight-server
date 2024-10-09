@@ -21,7 +21,7 @@ app.use(cookieParser());
 // Verify token
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) return res.status(401).send({ status: "unauthorized access" });
+  if (!token) return res.status(401).send({ message: "unauthorized access" });
   if (token) {
     jwt.verify(token, process.env.DEVSPOTLIGHT_TOKEN_KEY, (err, decoded) => {
       if (err) {
@@ -107,13 +107,7 @@ async function run() {
     });
 
     // Payment data geted
-    app.get("/api/v1/payment", async (req, res) => {
-      const cursor = await paymentsCollection.find().toArray();
-      res.send(cursor);
-    });
-
-    // Get user's Payment Data
-    app.get("/api/v1/payment", async (req, res) => {
+    app.get("/api/v1/payment", verifyToken, async (req, res) => {
       const cursor = await paymentsCollection.find().toArray();
       res.send(cursor);
     });
@@ -126,13 +120,13 @@ async function run() {
     });
 
     // Get all User's email
-    app.get("/api/v1/users", async (req, res) => {
+    app.get("/api/v1/users", verifyToken, async (req, res) => {
       const cursor = await usersCollection.find().toArray();
       res.send(cursor);
     });
 
     // Get user's with email finding
-    app.get("/api/v1/users/:email", async (req, res) => {
+    app.get("/api/v1/users/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
       const cursor = await usersCollection.findOne({ email });
       res.send(cursor);
@@ -239,7 +233,7 @@ async function run() {
     });
 
     // Get Add product data specefic user's
-    app.get("/api/v1/add-products", async (req, res) => {
+    app.get("/api/v1/add-products", verifyToken, async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
       const result = await addProductCollection.find(query).toArray();
@@ -259,38 +253,43 @@ async function run() {
       res.send(cursor);
     });
 
-    // Get all Acceptable Product
-    app.get("/api/v1/accepted-products", async (req, res) => {
+    app.get("/api/v1/accepted-products", verifyToken, async (req, res) => {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page) - 1;
       const sort = req.query.sort;
       const search = req.query.search;
-      const query = {
-        status: "Accepted",
-        tags: { $regex: search, $options: "i" },
-      };
+
+      const query = {};
+      if (search) {
+        query.tags = { $regex: search, $options: "i" };
+      }
+
       let options = {};
-      if (sort) options = { sort: { timestamp: sort === "asc" ? 1 : -1 } };
+      if (sort) {
+        options = { sort: { timestamp: sort === "asc" ? 1 : -1 } };
+      }
+
       const cursor = await addProductCollection
-        .find(query, options)
+        .find({ status: "Accepted" }, options)
         .skip(page * size)
         .limit(size)
         .toArray();
+
       res.send(cursor);
     });
 
-    // Get Count Data
-    app.get("/api/v1/products-count", async (req, res) => {
+    // Count the number of Acceptable Products
+    app.get("/api/v1/products-count", verifyToken, async (req, res) => {
       const search = req.query.search;
-      const query = {
-        status: "Accepted",
-        tags: { $regex: search, $options: "i" },
-        // This should match the search filter
-      };
+      const query = { status: "Accepted" };
+
+      if (search) {
+        query.tags = { $regex: search, $options: "i" };
+      }
+
       const count = await addProductCollection.countDocuments(query);
       res.send({ count });
     });
-
     // Get specefic Product data
     app.get("api/v1/review-products/:id", async (req, res) => {
       const id = req.params.id;
