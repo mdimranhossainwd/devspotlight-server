@@ -124,13 +124,13 @@ async function run() {
     });
 
     // Get all User's email
-    app.get("/api/v1/users", verifyToken, async (req, res) => {
+    app.get("/api/v1/users", async (req, res) => {
       const cursor = await usersCollection.find().toArray();
       res.send(cursor);
     });
 
     // Get user's with email finding
-    app.get("/api/v1/users/:email", verifyToken, async (req, res) => {
+    app.get("/api/v1/users/:email", async (req, res) => {
       const email = req.params.email;
       const cursor = await usersCollection.findOne({ email });
       res.send(cursor);
@@ -237,7 +237,7 @@ async function run() {
     });
 
     // Get Add product data specefic user's
-    app.get("/api/v1/add-products", verifyToken, async (req, res) => {
+    app.get("/api/v1/add-products", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
       const result = await addProductCollection.find(query).toArray();
@@ -257,7 +257,7 @@ async function run() {
       res.send(cursor);
     });
 
-    app.get("/api/v1/accepted-products", verifyToken, async (req, res) => {
+    app.get("/api/v1/accepted-products", async (req, res) => {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page) - 1;
       const sort = req.query.sort;
@@ -283,7 +283,7 @@ async function run() {
     });
 
     // Count the number of Acceptable Products
-    app.get("/api/v1/products-count", verifyToken, async (req, res) => {
+    app.get("/api/v1/products-count", async (req, res) => {
       const search = req.query.search;
       const query = { status: "Accepted" };
 
@@ -343,7 +343,7 @@ async function run() {
     });
 
     // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
+    await client.connect();
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     // console.log(
