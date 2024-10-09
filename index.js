@@ -144,6 +144,14 @@ async function run() {
       res.send(result);
     });
 
+    // Delete a Users
+    app.delete("/api/v1/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Report Data Post
     app.post("/api/v1/report", async (req, res) => {
       const body = req.body;
